@@ -18,13 +18,14 @@
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import str
 import ctypes
 import json
 
 try:
   from PyQt5.QtCore import QBuffer, QByteArray, QObject, QSharedMemory, QTextStream, pyqtSignal
 except:
-  from PyQt4.QtCore import QBuffer, QByteArray, QObject, QSharedMemory, QTextStream, pyqtSignal
+  from qgis.PyQt.QtCore import QByteArray, QObject, QTextStream, pyqtSignal
 
 
 class SocketInterface(QObject):

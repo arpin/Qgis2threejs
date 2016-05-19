@@ -19,18 +19,20 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import object
 import os
 
-from PyQt4.QtCore import Qt, QDir, QSize
-from PyQt4.QtGui import QColor, QImage, QImageReader, QPainter
+from qgis.PyQt.QtCore import Qt, QDir, QSize
+from qgis.PyQt.QtGui import QColor, QImage, QPainter
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsMapRenderer, QgsPalLabeling
 
-import gdal2threejs
-import qgis2threejstools as tools
-from qgis2threejstools import logMessage
+from . import gdal2threejs
+from . import qgis2threejstools as tools
+from .qgis2threejstools import logMessage
 
 
-class DataManager:
+class DataManager(object):
   """ manages a list of unique items """
 
   def __init__(self):

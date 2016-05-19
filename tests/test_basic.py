@@ -8,12 +8,14 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 import importlib
 import os
 import sys
 from unittest import TestCase
 
-from utilities import pluginPath
+from .utilities import pluginPath
 
 
 class TestBasic(TestCase):
@@ -41,7 +43,8 @@ class TestBasic(TestCase):
           pass
         imported += 1
 
-    print "{0} modules imported".format(imported)
+    # fix_print_with_import
+    print("{0} modules imported".format(imported))
 
 
 if __name__ == "__main__":

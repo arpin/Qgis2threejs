@@ -8,15 +8,16 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
+from __future__ import absolute_import
 # TODO: version >= 2.4
 import os
 from unittest import TestCase
-from PyQt4.QtCore import QSize
+from qgis.PyQt.QtCore import QSize
 from qgis.core import QgsCoordinateReferenceSystem, QgsMapSettings, QgsRectangle
 
 from Qgis2threejs.api import Exporter
 from Qgis2threejs.qgis2threejscore import ObjectTreeItem
-from utilities import dataPath, outputPath, loadProject
+from .utilities import dataPath, outputPath, loadProject
 
 
 class TestApi(TestCase):

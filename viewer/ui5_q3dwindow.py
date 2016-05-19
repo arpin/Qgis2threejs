@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import object
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'D:\Users\minorua\.qgis2\python\developing_plugins\Qgis2threejs\viewer\q3dwindow.ui'
@@ -167,4 +169,4 @@ class Ui_Q3DWindow(object):
         self.actionAdd_Layer.setText(_translate("Q3DWindow", "Add Layer..."))
         self.actionLayer_Panel.setText(_translate("Q3DWindow", "Layer Panel"))
 
-from q3dview import Q3DView
+from .q3dview import Q3DView

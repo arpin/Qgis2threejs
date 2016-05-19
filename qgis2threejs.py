@@ -19,16 +19,20 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import os
 
-from PyQt4.QtCore import QFile, QProcess, Qt    #, QSettings, QTranslator, qVersion
-from PyQt4.QtGui import QAction, QIcon, QMessageBox
+from qgis.PyQt.QtCore import QFile, QProcess, Qt    #, QSettings, QTranslator, qVersion
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProject, QgsMapLayer, QgsMapLayerRegistry, QgsPluginLayerRegistry
 
-from qgis2threejstools import logMessage, removeTemporaryOutputDir
+from .qgis2threejstools import logMessage, removeTemporaryOutputDir
 
 
-class Qgis2threejs:
+class Qgis2threejs(object):
 
   def __init__(self, iface):
     # Save reference to the QGIS interface
@@ -105,8 +109,8 @@ class Qgis2threejs:
     removeTemporaryOutputDir()
 
   def initManagers(self):
-    from vectorobject import ObjectTypeManager
-    from pluginmanager import PluginManager
+    from .vectorobject import ObjectTypeManager
+    from .pluginmanager import PluginManager
     if self.objectTypeManager is None:
       self.objectTypeManager = ObjectTypeManager()
 
@@ -114,7 +118,7 @@ class Qgis2threejs:
       self.pluginManager = PluginManager()
 
   def run(self):
-    from qgis2threejsdialog import Qgis2threejsDialog
+    from .qgis2threejsdialog import Qgis2threejsDialog
     self.initManagers()
 
     # restore export settings
@@ -144,7 +148,7 @@ class Qgis2threejs:
     self.settingsFilePath = settingsFilePath
 
   def launchViewer(self):
-    from viewer.q3dlivecontroller import Q3DLiveController
+    from .viewer.q3dlivecontroller import Q3DLiveController
 
     self.initManagers()
     pid = str(os.getpid())
@@ -169,7 +173,7 @@ class Qgis2threejs:
       logMessage("Cannot launch Live Exporter (code: {0}).".format(p.error()))
 
   def addPluginLayer(self):
-    from viewer.q3dlayer import Qgis2threejsLayer, Qgis2threejs25DLayerType
+    from .viewer.q3dlayer import Qgis2threejsLayer, Qgis2threejs25DLayerType
 
     self.initManagers()
 
@@ -202,11 +206,11 @@ class Qgis2threejs:
     self.layers[layer.id()] = layer   # TODO: remove item from dict when the layer is removed from registry
 
   def setting(self):
-    from settingsdialog import SettingsDialog
+    from .settingsdialog import SettingsDialog
     dialog = SettingsDialog(self.iface.mainWindow())
     dialog.show()
     if dialog.exec_():
-      from pluginmanager import PluginManager
+      from .pluginmanager import PluginManager
       self.pluginManager = PluginManager()
 
   def loadExportSettings(self, filename):

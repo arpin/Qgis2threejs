@@ -19,9 +19,13 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import map
+from builtins import str
+from builtins import object
 import struct
 
-from PyQt4.QtCore import QSize
+from qgis.PyQt.QtCore import QSize
 from qgis.core import QGis, QgsMapLayer, QgsRectangle
 
 try:
@@ -29,13 +33,13 @@ try:
 except ImportError:
   import gdal
 
-from gdal2threejs import Raster
-from geometry import Point
-from rotatedrect import RotatedRect
-from quadtree import DEMQuadTree
+from .gdal2threejs import Raster
+from .geometry import Point
+from .rotatedrect import RotatedRect
+from .quadtree import DEMQuadTree
 
 
-class ObjectTreeItem:
+class ObjectTreeItem(object):
 
   ITEM_WORLD = "WORLD"
   ITEM_CONTROLS = "CTRL"
@@ -75,7 +79,7 @@ class ObjectTreeItem:
     return None
 
 
-class MapTo3D:
+class MapTo3D(object):
 
   def __init__(self, mapSettings, planeWidth=100, verticalExaggeration=1, verticalShift=0):
     # map canvas
@@ -137,7 +141,7 @@ class GDALDEMProvider(Raster):
     return self._read(1, 1, geotransform)[0]
 
 
-class FlatDEMProvider:
+class FlatDEMProvider(object):
 
   def __init__(self, value=0):
     self.value = value
@@ -175,7 +179,7 @@ def createQuadTree(extent, p):
     p -- demProperties
   """
   try:
-    cx, cy, w, h = map(float, [p["lineEdit_centerX"], p["lineEdit_centerY"], p["lineEdit_rectWidth"], p["lineEdit_rectHeight"]])
+    cx, cy, w, h = list(map(float, [p["lineEdit_centerX"], p["lineEdit_centerY"], p["lineEdit_rectWidth"], p["lineEdit_rectHeight"]]))
   except ValueError:
     return None
 

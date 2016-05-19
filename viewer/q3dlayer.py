@@ -17,17 +17,19 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
 import json
 import os
 import threading
 
-from PyQt4.QtCore import Qt, QByteArray, QEventLoop, QFile, QObject, QTimer, QProcess, QRect, pyqtSignal, qDebug
-from PyQt4.QtGui import QImage, QPainter
+from qgis.PyQt.QtCore import Qt, QByteArray, QFile, QObject, QTimer, QProcess, QRect, pyqtSignal, qDebug
+from qgis.PyQt.QtGui import QImage, QPainter
 from qgis.core import QGis, QgsMapLayer, QgsMapLayerRegistry, QgsMapSettings, QgsPluginLayer, QgsPluginLayerType, QgsRenderContext, QgsMessageLog
 from qgis.gui import QgsMessageBar
 
-import q3dconst
-from q3dcontroller import Q3DController, Writer
+from . import q3dconst
+from .q3dcontroller import Q3DController, Writer
 from Qgis2threejs.rotatedrect import RotatedRect
 
 debug_mode = 1
@@ -35,7 +37,7 @@ debug_mode = 1
 
 def logMessage(message):
   try:
-    QgsMessageLog.logMessage(u"{0} ({1})".format(unicode(message), str(threading.current_thread())), "Qgis2threejs")
+    QgsMessageLog.logMessage(u"{0} ({1})".format(str(message), str(threading.current_thread())), "Qgis2threejs")
   except:
     pass
 

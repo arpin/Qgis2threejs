@@ -20,9 +20,10 @@
  ***************************************************************************/
  This script initializes the plugin, making it known to QGIS.
 """
+from __future__ import absolute_import
 
 
 def classFactory(iface):
   # load Qgis2threejs class from file Qgis2threejs
-  from qgis2threejs import Qgis2threejs
+  from .qgis2threejs import Qgis2threejs
   return Qgis2threejs(iface)

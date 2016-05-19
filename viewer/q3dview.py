@@ -18,6 +18,9 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
 from datetime import datetime
 import json
 import os
@@ -27,8 +30,8 @@ from PyQt5.QtCore import Qt, QByteArray, QBuffer, QIODevice, QObject, QSize, QUr
 from PyQt5.QtGui import QImage, QPainter, QPalette
 from PyQt5.QtWebKitWidgets import QWebPage, QWebView
 
-import q3dconst
-from socketclient import SocketClient
+from . import q3dconst
+from .socketclient import SocketClient
 
 
 def base64image(image):

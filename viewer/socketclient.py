@@ -18,9 +18,11 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import print_function
+from __future__ import absolute_import
 from PyQt5.QtNetwork import QLocalSocket
 
-from socketinterface import SocketInterface
+from .socketinterface import SocketInterface
 
 
 class SocketClient(SocketInterface):

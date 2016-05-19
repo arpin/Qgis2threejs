@@ -18,25 +18,30 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import object
 import json
 import time
-from PyQt4.QtCore import QBuffer, QByteArray, QIODevice, QObject, QThread, pyqtSignal
+from qgis.PyQt.QtCore import QByteArray, QIODevice, QObject, QThread, pyqtSignal
 from qgis.core import QGis, QgsMapLayer, QgsMessageLog
 
-import q3dconst
-from socketserver import SocketServer
+from . import q3dconst
+from .socketserver import SocketServer
 from Qgis2threejs.exportsettings import ExportSettings
 from Qgis2threejs.writer import ThreejsJSWriter, writeSimpleDEM, writeVector    #writeMultiResDEM
 from Qgis2threejs.qgis2threejstools import pyobj2js
 
 def logMessage(message):
   try:
-    QgsMessageLog.logMessage(unicode(message), "Qgis2threejs")
+    QgsMessageLog.logMessage(str(message), "Qgis2threejs")
   except:
     pass
 
 
-class Buffer:
+class Buffer(object):
 
   def __init__(self):
     self.data = QByteArray()
@@ -324,7 +329,7 @@ class WorkerManager(QObject):
     self.processNextRequest()
 
   def jobCanceled(self, jobId, kargs):
-    logMessage(u"jobCanceled: {0} ({1})".format(jobId, unicode(kargs)))
+    logMessage(u"jobCanceled: {0} ({1})".format(jobId, str(kargs)))
     self.jobFinished(jobId, kargs)
 
   # should be overridden

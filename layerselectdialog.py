@@ -17,8 +17,9 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDialog
+from __future__ import absolute_import
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog
 from qgis.core import QGis, QgsProject
 from qgis.gui import QgsMapCanvasLayer
 
@@ -27,7 +28,7 @@ if QGis.QGIS_VERSION_INT >= 20600:
 else:   # 2.4
   from qgis.gui import QgsLayerTreeModel
 
-from ui.layerselectdialog import Ui_LayerSelectDialog
+from .ui.layerselectdialog import Ui_LayerSelectDialog
 
 
 class LayerSelectDialog(QDialog):

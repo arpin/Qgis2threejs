@@ -19,20 +19,25 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import map
+from builtins import range
+from builtins import object
 import os
 import random
-from PyQt4.QtCore import QSize
-from PyQt4.QtGui import QColor
+from qgis.PyQt.QtCore import QSize
+from qgis.PyQt.QtGui import QColor
 from qgis.core import NULL
 
-from qgis2threejscore import calculateDEMSize
-from qgis2threejstools import logMessage
-from stylewidget import StyleWidget, HeightWidgetFunc, ColorWidgetFunc, FieldValueWidgetFunc, FilePathWidgetFunc, TransparencyWidgetFunc, OptionalColorWidgetFunc, ColorTextureWidgetFunc
+from .qgis2threejscore import calculateDEMSize
+from .qgis2threejstools import logMessage
+from .stylewidget import StyleWidget, HeightWidgetFunc, ColorWidgetFunc, FieldValueWidgetFunc, FilePathWidgetFunc, TransparencyWidgetFunc, OptionalColorWidgetFunc, ColorTextureWidgetFunc
 
 colorNames = []
 
 
-class DEMPropertyReader:
+class DEMPropertyReader(object):
 
   def __init__(self, properties=None):
     properties = properties or {}
@@ -50,7 +55,7 @@ class DEMPropertyReader:
     return calculateDEMSize(canvasSize, sizeLevel, roughening)
 
 
-class VectorPropertyReader:
+class VectorPropertyReader(object):
 
   def __init__(self, objectTypeManager, layer, properties=None):
     self.layer = layer
@@ -102,7 +107,7 @@ class VectorPropertyReader:
           cs_rgb = expr.evaluate(f, f.fields())
 
           # "rrr,ggg,bbb" (dec) to "0xRRGGBB" (hex)
-          rgb = map(int, cs_rgb.split(",")[0:3])
+          rgb = list(map(int, cs_rgb.split(",")[0:3]))
           return "0x" + "".join(map(chr, rgb)).encode("hex")
 
     return symbol.color().name().replace("#", "0x")
@@ -144,7 +149,7 @@ class VectorPropertyReader:
     try:
       return float(val)
     except Exception as e:
-      logMessage(u'{0} (value: {1})'.format(e.message, unicode(val)))
+      logMessage(u'{0} (value: {1})'.format(e.message, str(val)))
       return 0
 
   # functions to read values from height widget (z coordinate)

@@ -17,9 +17,11 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import object
 
 
-class GSIElevTilePlugin:
+class GSIElevTilePlugin(object):
 
   @staticmethod
   def name():
@@ -39,7 +41,7 @@ class GSIElevTilePlugin:
 
   @staticmethod
   def providerClass():
-    from gsielevtileprovider import GSIElevTileProvider
+    from .gsielevtileprovider import GSIElevTileProvider
     return GSIElevTileProvider
 
 plugin_class = GSIElevTilePlugin

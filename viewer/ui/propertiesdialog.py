@@ -1,3 +1,4 @@
+from builtins import object
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'D:\Users\minorua\.qgis2\python\developing_plugins\Qgis2threejs\viewer\ui\propertiesdialog.ui'
@@ -7,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

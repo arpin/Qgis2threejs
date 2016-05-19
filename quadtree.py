@@ -19,10 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import range
+from builtins import object
 from qgis.core import QgsPoint, QgsRectangle
 
 
-class QuadNode:
+class QuadNode(object):
 
   def __init__(self, parent, rect, location, height=0):
     self.parent = parent
@@ -65,7 +67,7 @@ class QuadNode:
     return self.subNodes[2 * y + x].quadByPosition(point)
 
 
-class QuadTree:
+class QuadTree(object):
 
   NodeClass = QuadNode
 
@@ -119,7 +121,7 @@ class QuadTree:
     return quads
 
 
-class QuadList:
+class QuadList(object):
 
   def __init__(self):
     self.quads = []

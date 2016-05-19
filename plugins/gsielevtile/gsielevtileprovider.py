@@ -21,11 +21,15 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
 import math
 import numpy
 import struct
 
-from PyQt4.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings
 from qgis.core import QGis, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsPoint, QgsRectangle
 
 try:
@@ -33,7 +37,7 @@ try:
 except ImportError:
   import gdal
 
-from downloader import Downloader
+from .downloader import Downloader
 from Qgis2threejs.qgis2threejstools import logMessage
 
 TILE_SIZE = 256
@@ -42,7 +46,7 @@ NODATA_VALUE = 0
 ZMAX = 14
 
 
-class GSIElevTileProvider:
+class GSIElevTileProvider(object):
 
   def __init__(self, dest_wkt):
     self.dest_wkt = dest_wkt

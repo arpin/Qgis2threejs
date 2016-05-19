@@ -8,13 +8,15 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
+from builtins import str
+from builtins import range
 import os
 import shutil
 import sys
 
-from PyQt4.QtCore import QFileInfo, qDebug
-from PyQt4.QtGui import QColor
-from PyQt4.QtXml import QDomDocument
+from qgis.PyQt.QtCore import QFileInfo, qDebug
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import QgsMapLayerRegistry, QgsMapSettings, QgsProject
 
 
@@ -85,7 +87,7 @@ def loadProject(filename):
 
 
 def log(msg):
-  if isinstance(msg, unicode):
+  if isinstance(msg, str):
     qDebug(msg.encode("utf-8"))
   else:
     qDebug(str(msg))

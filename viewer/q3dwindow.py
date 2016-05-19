@@ -18,6 +18,9 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
 import json
 from xml.dom import minidom
 
@@ -25,8 +28,8 @@ from PyQt5.Qt import QMainWindow, QEvent, Qt
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-from ui5_q3dwindow import Ui_Q3DWindow
-import q3dconst
+from .ui5_q3dwindow import Ui_Q3DWindow
+from . import q3dconst
 
 
 class LayerManager(QObject):

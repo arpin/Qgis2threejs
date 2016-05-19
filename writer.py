@@ -19,7 +19,11 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QObject
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
+from qgis.PyQt.QtCore import QObject
 from qgis.core import QGis, QgsCoordinateTransform, QgsFeatureRequest, QgsGeometry, QgsMapLayer, QgsMapRenderer, QgsMapLayerRegistry, QgsPoint
 
 try:
@@ -28,14 +32,14 @@ except ImportError:
   import ogr
   import osr
 
-from datamanager import ImageManager, ModelManager, MaterialManager
-from demblock import DEMBlock, DEMBlocks
-from geometry import PointGeometry, LineGeometry, PolygonGeometry, TriangleMesh, dissolvePolygonsOnCanvas
-from propertyreader import DEMPropertyReader, VectorPropertyReader
-from qgis2threejscore import ObjectTreeItem, GDALDEMProvider
-from qgis2threejstools import pyobj2js, logMessage
-from quadtree import DEMQuadList
-from rotatedrect import RotatedRect
+from .datamanager import ImageManager, ModelManager, MaterialManager
+from .demblock import DEMBlock, DEMBlocks
+from .geometry import PointGeometry, LineGeometry, PolygonGeometry, TriangleMesh, dissolvePolygonsOnCanvas
+from .propertyreader import DEMPropertyReader, VectorPropertyReader
+from .qgis2threejscore import ObjectTreeItem, GDALDEMProvider
+from .qgis2threejstools import pyobj2js, logMessage
+from .quadtree import DEMQuadList
+from .rotatedrect import RotatedRect
 
 
 class ThreejsJSWriter(QObject):
@@ -75,7 +79,7 @@ class ThreejsJSWriter(QObject):
     wgs84Center = self.settings.wgs84Center()
 
     args = {"title": settings.title,
-            "crs": unicode(settings.crs.authid()),
+            "crs": str(settings.crs.authid()),
             "proj": settings.crs.toProj4(),
             "baseExtent": [rect.xMinimum(), rect.yMinimum(), rect.xMaximum(), rect.yMaximum()],
             "rotation": extent.rotation(),
@@ -179,7 +183,7 @@ class ThreejsJSWriter(QObject):
     #else:
     files.append("%s.js" % filetitle)
 
-    return map(lambda fn: '<script src="./%s"></script>' % fn, files)
+    return ['<script src="./%s"></script>' % fn for fn in files]
 
   def triangleMesh(self, dem_width=0, dem_height=0):
     if dem_width == 0 and dem_height == 0:
@@ -451,9 +455,9 @@ def writeMultiResDEM(writer, properties, progress=None):
 
     # shift and scale
     if mapTo3d.verticalShift != 0:
-      dem_values = map(lambda x: x + mapTo3d.verticalShift, dem_values)
+      dem_values = [x + mapTo3d.verticalShift for x in dem_values]
     if mapTo3d.multiplierZ != 1:
-      dem_values = map(lambda x: x * mapTo3d.multiplierZ, dem_values)
+      dem_values = [x * mapTo3d.multiplierZ for x in dem_values]
 
     quad.setData(dem_width, dem_height, dem_values)
 
@@ -484,7 +488,7 @@ def writeMultiResDEM(writer, properties, progress=None):
   writer.writeMaterials(layer.materialManager)
 
 
-class Feature:
+class Feature(object):
 
   def __init__(self, writer, layer, feat):
     self.writer = writer
@@ -504,7 +508,7 @@ class Feature:
     return self.prop.values(self.feat)
 
 
-class Layer:
+class Layer(object):
 
   def __init__(self, writer, layer, prop):
     self.writer = writer
@@ -690,7 +694,7 @@ def writeVectors(writer, legendInterface=None, progress=None):
   layers = []
   if legendInterface is None:
     for parentId in [ObjectTreeItem.ITEM_POINT, ObjectTreeItem.ITEM_LINE, ObjectTreeItem.ITEM_POLYGON]:
-      for layerId, properties in settings.get(parentId, {}).iteritems():
+      for layerId, properties in settings.get(parentId, {}).items():
         if properties.get("visible", False):
           layers.append([layerId, properties])
   else:

@@ -17,12 +17,13 @@
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import object
 
 plugin_version = "1.4"
 debug_mode = 0
 
 
-class DefaultSettings:
+class DefaultSettings(object):
 
   def __init__(self):
     # template

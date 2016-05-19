@@ -17,20 +17,23 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import os
 import datetime
 
-from PyQt4.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings
 from qgis.core import QGis, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMapLayerRegistry
 
-from rotatedrect import RotatedRect
-from qgis2threejscore import ObjectTreeItem, MapTo3D, GDALDEMProvider, FlatDEMProvider, createQuadTree
-from qgis2threejstools import logMessage
-from settings import def_vals
-import qgis2threejstools as tools
+from .rotatedrect import RotatedRect
+from .qgis2threejscore import ObjectTreeItem, MapTo3D, GDALDEMProvider, FlatDEMProvider, createQuadTree
+from .qgis2threejstools import logMessage
+from .settings import def_vals
+from . import qgis2threejstools as tools
 
 
-class ExportSettings:
+class ExportSettings(object):
 
   # export mode
   PLAIN_SIMPLE = 0
@@ -42,7 +45,7 @@ class ExportSettings:
     self.localBrowsingMode = localBrowsingMode
     self.pluginManager = pluginManager
     if self.pluginManager is None:
-      from pluginmanager import PluginManager
+      from .pluginmanager import PluginManager
       self.pluginManager = PluginManager()
 
     self.data = {}
@@ -73,7 +76,7 @@ class ExportSettings:
   def controls(self):
     if self._controls:
       return self._controls
-    return QSettings().value("/Qgis2threejs/lastControls", def_vals.controls, type=unicode)
+    return QSettings().value("/Qgis2threejs/lastControls", def_vals.controls, type=str)
 
   @controls.setter
   def controls(self, value):

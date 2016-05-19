@@ -19,14 +19,17 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import os
 import sys
 
-from PyQt4.QtCore import QDir, QFile, QSettings
-from qgis2threejstools import logMessage
+from qgis.PyQt.QtCore import QDir, QFile, QSettings
+from .qgis2threejstools import logMessage
 
 
-class PluginManager:
+class PluginManager(object):
 
   def __init__(self, allPlugins=False):
     self.allPlugins = allPlugins
@@ -40,7 +43,7 @@ class PluginManager:
       plugin_dir = QDir(os.path.join(os.path.dirname(QFile.decodeName(__file__)), "plugins"))
       plugins = plugin_dir.entryList(QDir.Dirs | QDir.NoSymLinks | QDir.NoDotAndDotDot)
     else:
-      p = QSettings().value("/Qgis2threejs/plugins", "", type=unicode)
+      p = QSettings().value("/Qgis2threejs/plugins", "", type=str)
       plugins = p.split(",") if p else []
 
     import importlib

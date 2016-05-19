@@ -18,8 +18,12 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import map
+from builtins import range
+from builtins import object
 from qgis.core import QgsGeometry, QgsPoint, QgsRectangle, QgsFeature, QgsSpatialIndex, QgsCoordinateTransform, QgsFeatureRequest
-from qgis2threejstools import logMessage
+from .qgis2threejstools import logMessage
 
 try:
   from osgeo import ogr
@@ -27,7 +31,7 @@ except ImportError:
   import ogr
 
 
-class Point:
+class Point(object):
 
   def __init__(self, x, y, z=0):
     self.x = x
@@ -46,25 +50,25 @@ def pointToQgsPoint(point):
 
 
 def lineToQgsPolyline(line):
-  return map(pointToQgsPoint, line)
+  return list(map(pointToQgsPoint, line))
 
 
 def polygonToQgsPolygon(polygon):
-  return map(lineToQgsPolyline, polygon)
+  return list(map(lineToQgsPolyline, polygon))
 
 
-class PointGeometry:
+class PointGeometry(object):
 
   def __init__(self):
     self.pts = []
 
   def asList(self):
-    return map(lambda pt: [pt.x, pt.y, pt.z], self.pts)
+    return [[pt.x, pt.y, pt.z] for pt in self.pts]
 
   def toQgsGeometry(self):
     count = len(self.pts)
     if count > 1:
-      pts = map(pointToQgsPoint, self.pts)
+      pts = list(map(pointToQgsPoint, self.pts))
       return QgsGeometry.fromMultiPoint(pts)
 
     if count == 1:
@@ -102,21 +106,21 @@ class PointGeometry:
     return point_geom
 
 
-class LineGeometry:
+class LineGeometry(object):
 
   def __init__(self):
     self.lines = []
 
   def asList(self):
-    return [map(lambda pt: [pt.x, pt.y, pt.z], line) for line in self.lines]
+    return [[[pt.x, pt.y, pt.z] for pt in line] for line in self.lines]
 
   def asList2(self):
-    return [map(lambda pt: [pt.x, pt.y], line) for line in self.lines]
+    return [[[pt.x, pt.y] for pt in line] for line in self.lines]
 
   def toQgsGeometry(self):
     count = len(self.lines)
     if count > 1:
-      lines = map(lineToQgsPolyline, self.lines)
+      lines = list(map(lineToQgsPolyline, self.lines))
       return QgsGeometry.fromMultiPolyline(lines)
 
     if count == 1:
@@ -154,7 +158,7 @@ class LineGeometry:
     return line_geom
 
 
-class PolygonGeometry:
+class PolygonGeometry(object):
 
   def __init__(self):
     self.polygons = []
@@ -185,14 +189,14 @@ class PolygonGeometry:
     p = []
     for boundaries in self.polygons:
       # outer boundary
-      pts = map(lambda pt: [pt.x, pt.y, pt.z], boundaries[0])
+      pts = [[pt.x, pt.y, pt.z] for pt in boundaries[0]]
       if not GeometryUtils.isClockwise(boundaries[0]):
         pts.reverse()   # to clockwise
       b = [pts]
 
       # inner boundaries
       for boundary in boundaries[1:]:
-        pts = map(lambda pt: [pt.x, pt.y, pt.z], boundary)
+        pts = [[pt.x, pt.y, pt.z] for pt in boundary]
         if GeometryUtils.isClockwise(boundary):
           pts.reverse()   # to counter-clockwise
         b.append(pts)
@@ -202,7 +206,7 @@ class PolygonGeometry:
   def toQgsGeometry(self):
     count = len(self.polygons)
     if count > 1:
-      polys = map(polygonToQgsPolygon, self.polygons)
+      polys = list(map(polygonToQgsPolygon, self.polygons))
       return QgsGeometry.fromMultiPolygon(polys)
 
     if count == 1:
@@ -259,7 +263,7 @@ class PolygonGeometry:
 #    pass
 
 
-class GeometryUtils:
+class GeometryUtils(object):
 
   @classmethod
   def _signedArea(cls, p):
@@ -275,7 +279,7 @@ class GeometryUtils:
     return cls._signedArea(linearRing) < 0
 
 
-class TriangleMesh:
+class TriangleMesh(object):
 
   # 0 - 3
   # | / |
@@ -348,7 +352,7 @@ class TriangleMesh:
                 yield poly.asPolygon()
 
 
-class Triangles:
+class Triangles(object):
 
   def __init__(self):
     self.vertices = []

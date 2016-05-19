@@ -19,17 +19,21 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import os
 
-from PyQt4.QtCore import QDir, QVariant
-from PyQt4.QtGui import QWidget, QColor, QColorDialog, QFileDialog
+from qgis.PyQt.QtCore import QDir, QVariant
+from qgis.PyQt.QtWidgets import QWidget, QColorDialog, QFileDialog
+from qgis.PyQt.QtGui import QColor
 from qgis.core import QGis, QgsProject
 
-from ui.widgetComboEdit import Ui_ComboEditWidget
-from qgis2threejstools import shortTextFromSelectedLayerIds
+from .ui.widgetComboEdit import Ui_ComboEditWidget
+from .qgis2threejstools import shortTextFromSelectedLayerIds
 
 
-class WidgetFuncBase:
+class WidgetFuncBase(object):
 
   FIRST_ATTRIBUTE = 100
 
@@ -120,7 +124,7 @@ class FieldValueWidgetFunc(WidgetFuncBase):
       defaultValue = 1
       label = self.label_field
 
-    self.widget.lineEdit.setText(unicode(defaultValue))
+    self.widget.lineEdit.setText(str(defaultValue))
     if label:
       self.widget.label_2.setText(label)
     self.widget.label_2.setVisible(bool(label))
@@ -174,7 +178,7 @@ class FilePathWidgetFunc(WidgetFuncBase):
     options = options or {}
     self.lineEditLabel = options.get("label", "Path")
     WidgetFuncBase.setup(self, options.get("name", ""), editLabel=self.lineEditLabel, toolButton=True)
-    self.widget.lineEdit.setText(unicode(options.get("defaultValue", "")))
+    self.widget.lineEdit.setText(str(options.get("defaultValue", "")))
 
     self.widget.comboBox.clear()
     self.widget.comboBox.addItem("File path", FilePathWidgetFunc.FILEPATH)
@@ -268,7 +272,7 @@ class HeightWidgetFunc(WidgetFuncBase):
       label = "Addend"
       defaultValue = 0
     self.widget.label_2.setText(label)
-    self.widget.lineEdit.setText(unicode(defaultValue))
+    self.widget.lineEdit.setText(str(defaultValue))
 
   def isCurrentItemRelativeHeight(self):
     itemData = self.widget.comboBox.itemData(self.widget.comboBox.currentIndex())
@@ -305,7 +309,7 @@ class LabelHeightWidgetFunc(WidgetFuncBase):
       label = "Addend"
       defaultValue = 0
     self.widget.label_2.setText(label)
-    self.widget.lineEdit.setText(unicode(defaultValue))
+    self.widget.lineEdit.setText(str(defaultValue))
 
 
 class TransparencyWidgetFunc(WidgetFuncBase):
@@ -348,7 +352,7 @@ class OptionalColorWidgetFunc(ColorWidgetFunc):
     if itemText.get(OptionalColorWidgetFunc.NONE, "") is not None:
       self.widget.comboBox.insertItem(0, "None", OptionalColorWidgetFunc.NONE)
 
-    for id, text in itemText.iteritems():
+    for id, text in itemText.items():
       index = self.widget.comboBox.findData(id)
       if index != -1:
         self.widget.comboBox.setItemText(index, text)
@@ -409,7 +413,7 @@ class ColorTextureWidgetFunc(ColorWidgetFunc):
       return
 
     # ColorTextureWidgetFunc.LAYER
-    from layerselectdialog import LayerSelectDialog
+    from .layerselectdialog import LayerSelectDialog
     dialog = LayerSelectDialog(self.widget)
     dialog.initTree(self.layerIds)
     dialog.setMapSettings(self.mapSettings)
@@ -545,7 +549,7 @@ class StyleWidget(QWidget, Ui_ComboEditWidget):
 
   def values(self):
     if self.func and self.hasValues:
-      return self.func.values()
+      return list(self.func.values())
     else:
       return {}
 

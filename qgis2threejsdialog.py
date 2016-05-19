@@ -22,23 +22,28 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import zip
+from builtins import str
+from builtins import range
 import os
 
-from PyQt4.QtCore import Qt, QDir, QSettings, qDebug, QEventLoop, SIGNAL
-from PyQt4.QtGui import QAction, QColor, QDialog, QFileDialog, QIcon, QMessageBox, QMenu, QTreeWidgetItem, QTreeWidgetItemIterator, QToolButton
+from qgis.PyQt.QtCore import Qt, QDir, QSettings, qDebug
+from qgis.PyQt.QtWidgets import QAction, QDialog, QFileDialog, QMessageBox, QMenu, QTreeWidgetItem, QTreeWidgetItemIterator, QToolButton
+from qgis.PyQt.QtGui import QColor, QIcon
 from qgis.core import QGis, QgsApplication, QgsMapLayer, QgsMapLayerRegistry, QgsFeature, QgsPoint, QgsRectangle, QgsProject
 from qgis.gui import QgsMessageBar, QgsMapToolEmitPoint, QgsRubberBand
 
-from ui.qgis2threejsdialog import Ui_Qgis2threejsDialog
+from .ui.qgis2threejsdialog import Ui_Qgis2threejsDialog
 
-from export import exportToThreeJS
-from exportsettings import ExportSettings
-from qgis2threejscore import ObjectTreeItem, MapTo3D
-from qgis2threejstools import logMessage
-from rotatedrect import RotatedRect
-from settings import debug_mode, def_vals, plugin_version
-import propertypages as ppages
-import qgis2threejstools as tools
+from .export import exportToThreeJS
+from .exportsettings import ExportSettings
+from .qgis2threejscore import ObjectTreeItem, MapTo3D
+from .qgis2threejstools import logMessage
+from .rotatedrect import RotatedRect
+from .settings import debug_mode, def_vals, plugin_version
+from . import propertypages as ppages
+from . import qgis2threejstools as tools
 
 
 class Qgis2threejsDialog(QDialog):
@@ -119,7 +124,7 @@ class Qgis2threejsDialog(QDialog):
     self.pages[ppages.PAGE_DEM] = ppages.DEMPropertyPage(self)
     self.pages[ppages.PAGE_VECTOR] = ppages.VectorPropertyPage(self)
     container = ui.propertyPagesContainer
-    for page in self.pages.itervalues():
+    for page in self.pages.values():
       page.hide()
       container.addWidget(page)
 
@@ -154,7 +159,7 @@ class Qgis2threejsDialog(QDialog):
     registry = QgsMapLayerRegistry.instance()
     for itemId in [ObjectTreeItem.ITEM_OPTDEM, ObjectTreeItem.ITEM_POINT, ObjectTreeItem.ITEM_LINE, ObjectTreeItem.ITEM_POLYGON]:
       parent = self._settings.get(itemId, {})
-      for layerId in parent.keys():
+      for layerId in list(parent.keys()):
         if registry.mapLayer(layerId) is None:
           del parent[layerId]
 
@@ -232,7 +237,7 @@ class Qgis2threejsDialog(QDialog):
       self.setSettings({})
 
   def pluginSettings(self):
-    from settingsdialog import SettingsDialog
+    from .settingsdialog import SettingsDialog
     dialog = SettingsDialog(self)
     if dialog.exec_():
       self.pluginManager.reloadPlugins()
@@ -287,7 +292,7 @@ class Qgis2threejsDialog(QDialog):
 
     # if no template setting, select the last used template
     if not templatePath:
-      templatePath = QSettings().value("/Qgis2threejs/lastTemplate", def_vals.template, type=unicode)
+      templatePath = QSettings().value("/Qgis2threejs/lastTemplate", def_vals.template, type=str)
 
     if templatePath:
       index = cbox.findText(templatePath)
@@ -321,7 +326,7 @@ class Qgis2threejsDialog(QDialog):
       if parentId == ObjectTreeItem.ITEM_OPTDEM and isVisible:
         optDEMChecked = True
 
-    for id, item in topItems.iteritems():
+    for id, item in topItems.items():
       if id != ObjectTreeItem.ITEM_OPTDEM or optDEMChecked:
         tree.expandItem(item)
 
@@ -390,7 +395,7 @@ class Qgis2threejsDialog(QDialog):
 
     # hide text browser and all pages
     self.ui.textBrowser.hide()
-    for page in self.pages.itervalues():
+    for page in self.pages.values():
       page.hide()
 
     parent = currentItem.parent()
@@ -408,7 +413,7 @@ class Qgis2threejsDialog(QDialog):
     else:
       parentId = parent.data(0, Qt.UserRole)
       layerId = currentItem.data(0, Qt.UserRole)
-      layer = QgsMapLayerRegistry.instance().mapLayer(unicode(layerId))
+      layer = QgsMapLayerRegistry.instance().mapLayer(str(layerId))
       if layer is None:
         return
 
@@ -660,7 +665,7 @@ class PointMapTool(QgsMapToolEmitPoint):
 
   def canvasPressEvent(self, e):
     self.point = self.toMapCoordinates(e.pos())
-    self.emit(SIGNAL("pointSelected()"))
+    self.pointSelected.emit()
 
 
 # first changed on 2014-01-03 (last changed on 2015-03-09)
@@ -693,7 +698,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
 
   def canvasReleaseEvent(self, e):
     self.isDrawing = False
-    self.emit(SIGNAL("rectangleCreated()"))
+    self.rectangleCreated.emit()
 
   def canvasMoveEvent(self, e):
     if not self.isDrawing:
