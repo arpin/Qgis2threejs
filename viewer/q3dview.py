@@ -23,12 +23,18 @@ import json
 import os
 
 #from PyQt5.Qt import *
-from PyQt5.QtCore import Qt, QByteArray, QBuffer, QIODevice, QObject, QSize, QUrl, pyqtProperty, pyqtSlot
+from PyQt5.QtCore import Qt, QByteArray, QBuffer, QIODevice, QObject, QSize, QUrl, pyqtSlot
 from PyQt5.QtGui import QImage, QPainter, QPalette
 from PyQt5.QtWebKitWidgets import QWebPage, QWebView
+# INSTALL
+# sudo apt-get install python3-pyqt5.qtwebkit
 
 import q3dconst
-from socketclient import SocketClient
+from Qgis2threejs.settings import live_in_another_process
+if live_in_another_process:
+  from socketclient import SocketClient
+else:
+  from q3dconnector import Q3DConnector
 
 
 def base64image(image):
@@ -96,7 +102,11 @@ class Q3DView(QWebView):
     self.wnd = wnd
     self.layerManager = layerManager
     self.isViewer = isViewer
-    self.iface = SocketClient(serverName, self)
+
+    if live_in_another_process:
+      self.iface = SocketClient(serverName, self)
+    else:
+      self.iface = Q3DConnector(self)
     self.iface.notified.connect(self.notified)
     self.iface.requestReceived.connect(self.requestReceived)
     self.iface.responseReceived.connect(self.responseReceived)
@@ -179,6 +189,7 @@ class Q3DView(QWebView):
   def runString(self, string):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     self.jsfile.write("//// runString ({0})\n{1}\n".format(now, string))
+    # string += "\nfor(var xxx = 0; xxx < 9999999999; xxx++) { var i = 9999 / 0.5; };"
     string += "\napp.render();"   #TODO: THIS IS FOR DEBUG
     return self._page.mainFrame().evaluateJavaScript(string)
 

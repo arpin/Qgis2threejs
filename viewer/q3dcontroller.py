@@ -24,10 +24,15 @@ from PyQt4.QtCore import QBuffer, QByteArray, QIODevice, QObject, QThread, pyqtS
 from qgis.core import QGis, QgsMapLayer, QgsMessageLog
 
 import q3dconst
-from socketserver import SocketServer
 from Qgis2threejs.exportsettings import ExportSettings
 from Qgis2threejs.writer import ThreejsJSWriter, writeSimpleDEM, writeVector    #writeMultiResDEM
 from Qgis2threejs.qgis2threejstools import pyobj2js
+from Qgis2threejs.settings import live_in_another_process
+if live_in_another_process:
+  from socketserver import SocketServer
+else:
+  from q3dconnector import Q3DConnector
+
 
 def logMessage(message):
   try:
@@ -387,8 +392,11 @@ class Q3DController(WorkerManager):
     self.pluginManager = pluginManager
     self.exportSettings = exportSettings
 
-    self.iface = SocketServer(serverName, qgis_iface.mainWindow())
-    self.iface.log = logMessage   # override
+    if live_in_another_process:
+      self.iface = SocketServer(serverName, qgis_iface.mainWindow())
+      self.iface.log = logMessage   # override
+    else:
+      self.iface = Q3DConnector(qgis_iface.mainWindow())
     self.iface.notified.connect(self.notified)
     self.iface.requestReceived.connect(self.requestReceived)
     self.iface.responseReceived.connect(self.responseReceived)
@@ -419,9 +427,6 @@ class Q3DController(WorkerManager):
 
 def processRequest(worker, dataType, params):
   qgis_iface = worker.qgis_iface
-  pluginManager = worker.pluginManager
-  writer = worker.writer
-
   if dataType == q3dconst.BIN_CANVAS_IMAGE:
     buf = Buffer()
     qgis_iface.mapCanvas().map().contentImage().save(buf, "PNG")
