@@ -28,40 +28,46 @@ from qgis2threejstools import logMessage
 
 class PluginManager:
 
-  def __init__(self, allPlugins=False):
-    self.allPlugins = allPlugins
-    self.reloadPlugins()
+    def __init__(self, allPlugins=False):
+        self.allPlugins = allPlugins
+        self.reloadPlugins()
 
-  def reloadPlugins(self):
-    self.modules = []
-    self.plugins = []
+    def reloadPlugins(self):
+        self.modules = []
+        self.plugins = []
 
-    if self.allPlugins:
-      plugin_dir = QDir(os.path.join(os.path.dirname(QFile.decodeName(__file__)), "plugins"))
-      plugins = plugin_dir.entryList(QDir.Dirs | QDir.NoSymLinks | QDir.NoDotAndDotDot)
-    else:
-      p = QSettings().value("/Qgis2threejs/plugins", "", type=unicode)
-      plugins = p.split(",") if p else []
+        if self.allPlugins:
+            plugin_dir = QDir(
+                os.path.join(
+                    os.path.dirname(
+                        QFile.decodeName(__file__)),
+                    "plugins"))
+            plugins = plugin_dir.entryList(
+                QDir.Dirs | QDir.NoSymLinks | QDir.NoDotAndDotDot)
+        else:
+            p = QSettings().value("/Qgis2threejs/plugins", "", type=unicode)
+            plugins = p.split(",") if p else []
 
-    import importlib
-    for name in plugins:
-      try:
-        modname = "Qgis2threejs.plugins." + str(name)
-        module = reload(sys.modules[modname]) if modname in sys.modules else importlib.import_module(modname)
-        self.modules.append(module)
-        self.plugins.append(getattr(module, "plugin_class"))
-      except ImportError:
-        logMessage("Failed to load plugin: " + str(name))
+        import importlib
+        for name in plugins:
+            try:
+                modname = "Qgis2threejs.plugins." + str(name)
+                module = reload(
+                    sys.modules[modname]) if modname in sys.modules else importlib.import_module(modname)
+                self.modules.append(module)
+                self.plugins.append(getattr(module, "plugin_class"))
+            except ImportError:
+                logMessage("Failed to load plugin: " + str(name))
 
-  def demProviderPlugins(self):
-    plugins = []
-    for plugin in self.plugins:
-      if plugin.type() == "demprovider":
-        plugins.append(plugin)
-    return plugins
+    def demProviderPlugins(self):
+        plugins = []
+        for plugin in self.plugins:
+            if plugin.type() == "demprovider":
+                plugins.append(plugin)
+        return plugins
 
-  def findDEMProvider(self, id):
-    for plugin in self.plugins:
-      if plugin.type() == "demprovider" and plugin.providerId() == id:
-        return plugin.providerClass()
-    return None
+    def findDEMProvider(self, id):
+        for plugin in self.plugins:
+            if plugin.type() == "demprovider" and plugin.providerId() == id:
+                return plugin.providerClass()
+        return None

@@ -21,106 +21,109 @@
 """
 import os
 try:
-  from qgis.core import QgsMapSettings, QgsRectangle
+    from qgis.core import QgsMapSettings, QgsRectangle
 
-  from export import exportToThreeJS
-  from exportsettings import ExportSettings
-  from rotatedrect import RotatedRect
-  import qgis2threejstools
+    from export import exportToThreeJS
+    from exportsettings import ExportSettings
+    from rotatedrect import RotatedRect
+    import qgis2threejstools
 
 except ImportError:
-  if os.environ.get('READTHEDOCS', None) is None:  # and os.environ.get('SPHINXBUILD', None) is None:
-    raise
+    # and os.environ.get('SPHINXBUILD', None) is None:
+    if os.environ.get('READTHEDOCS', None) is None:
+        raise
 
 
 class Exporter:
-  """A convenient class to export the scenes to web programmatically
-  """
-
-  NO_ERROR = None
-
-  def __init__(self, iface=None, settingsPath=None):
-    """ Constructor.
-
-      :param iface: If specified, mapSettings attribute is initialized with the map settings of the map canvas.
-                    The iface.legendInterface() is used to export vector layers in the same order as the legend.
-      :type iface: QgisInterface
-      :param settingsPath: Path to an existing settings file (.qto3settings).
-      :type settingsPath: unicode
+    """A convenient class to export the scenes to web programmatically
     """
-    self.iface = iface
-    self.mapSettings = None
 
-    # create an export settings object
-    self.settings = ExportSettings()
-    if settingsPath:
-      self.settings.loadSettingsFromFile(settingsPath)
+    NO_ERROR = None
 
-    if iface:
-      self.setMapSettings(iface.mapCanvas().mapSettings())
+    def __init__(self, iface=None, settingsPath=None):
+        """ Constructor.
 
-  def setExtent(self, center, width, height, rotation=0):
-    """ Set map extent to export settings.
+          :param iface: If specified, mapSettings attribute is initialized with the map settings of the map canvas.
+                        The iface.legendInterface() is used to export vector layers in the same order as the legend.
+          :type iface: QgisInterface
+          :param settingsPath: Path to an existing settings file (.qto3settings).
+          :type settingsPath: unicode
+        """
+        self.iface = iface
+        self.mapSettings = None
 
-    This is a convenience method to set map extent to export settings.
-    Map settings should be set before this method is called.
+        # create an export settings object
+        self.settings = ExportSettings()
+        if settingsPath:
+            self.settings.loadSettingsFromFile(settingsPath)
 
-    :param center: Center of the map extent in the map CRS.
-    :type center: QgsPoint
-    :param width: Width of the map extent in unit of the map CRS.
-    :type width: float
-    :param height: Height of the map extent in unit of the map CRS.
-    :type height: float
-    :param rotation: Rotation in degrees. Requires QGIS version 2.8 or later.
-    :type rotation: float
-    """
-    if self.mapSettings is None:
-      self.mapSettings = QgsMapSettings()
+        if iface:
+            self.setMapSettings(iface.mapCanvas().mapSettings())
 
-    if rotation:
-      rect = RotatedRect(center, width, height, rotation)
-      rect.toMapSettings(self.mapSettings)
-    else:
-      rect = QgsRectangle(center.x() - width / 2, center.y() - height / 2,
-                          center.x() + width / 2, center.y() + height / 2)
-      self.mapSettings.setExtent(rect)
+    def setExtent(self, center, width, height, rotation=0):
+        """ Set map extent to export settings.
 
-    self.settings.setMapSettings(self.mapSettings)
+        This is a convenience method to set map extent to export settings.
+        Map settings should be set before this method is called.
 
-  def setMapSettings(self, mapSettings):
-    """Set map settings to export settings.
+        :param center: Center of the map extent in the map CRS.
+        :type center: QgsPoint
+        :param width: Width of the map extent in unit of the map CRS.
+        :type width: float
+        :param height: Height of the map extent in unit of the map CRS.
+        :type height: float
+        :param rotation: Rotation in degrees. Requires QGIS version 2.8 or later.
+        :type rotation: float
+        """
+        if self.mapSettings is None:
+            self.mapSettings = QgsMapSettings()
 
-    Map settings is used to define base extent of the export and render a map canvas image.
+        if rotation:
+            rect = RotatedRect(center, width, height, rotation)
+            rect.toMapSettings(self.mapSettings)
+        else:
+            rect = QgsRectangle(center.x() - width / 2, center.y() - height / 2,
+                                center.x() + width / 2, center.y() + height / 2)
+            self.mapSettings.setExtent(rect)
 
-    :param mapSettings: Map settings to be set.
-    :type mapSettings: QgsMapSettings
-    """
-    self.mapSettings = mapSettings
-    self.settings.setMapSettings(mapSettings)
+        self.settings.setMapSettings(self.mapSettings)
 
-  def export(self, htmlPath, openBrowser=False):
-    """Do export.
+    def setMapSettings(self, mapSettings):
+        """Set map settings to export settings.
 
-    :param htmlPath: Output HTML file path.
-    :type htmlPath: unicode
-    :param openBrowser: If True, open the exported page using default web browser.
-    :type openBrowser: bool
+        Map settings is used to define base extent of the export and render a map canvas image.
 
-    :returns: Exporter.NO_ERROR if success. Otherwise returns error message.
-    :rtype: None or unicode.
-    """
-    self.settings.setOutputFilename(htmlPath)
+        :param mapSettings: Map settings to be set.
+        :type mapSettings: QgsMapSettings
+        """
+        self.mapSettings = mapSettings
+        self.settings.setMapSettings(mapSettings)
 
-    # check validity of export settings
-    err_msg = self.settings.checkValidity()
-    if err_msg:
-      return err_msg
+    def export(self, htmlPath, openBrowser=False):
+        """Do export.
 
-    ret = exportToThreeJS(self.settings, self.iface.legendInterface() if self.iface else None)
-    if not ret:
-      return "Failed to export (Unknown error)"
+        :param htmlPath: Output HTML file path.
+        :type htmlPath: unicode
+        :param openBrowser: If True, open the exported page using default web browser.
+        :type openBrowser: bool
 
-    if openBrowser:
-      qgis2threejstools.openHTMLFile(self.settings.htmlfilename)
+        :returns: Exporter.NO_ERROR if success. Otherwise returns error message.
+        :rtype: None or unicode.
+        """
+        self.settings.setOutputFilename(htmlPath)
 
-    return Exporter.NO_ERROR
+        # check validity of export settings
+        err_msg = self.settings.checkValidity()
+        if err_msg:
+            return err_msg
+
+        ret = exportToThreeJS(
+            self.settings,
+            self.iface.legendInterface() if self.iface else None)
+        if not ret:
+            return "Failed to export (Unknown error)"
+
+        if openBrowser:
+            qgis2threejstools.openHTMLFile(self.settings.htmlfilename)
+
+        return Exporter.NO_ERROR

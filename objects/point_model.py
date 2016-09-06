@@ -24,49 +24,60 @@ from Qgis2threejs.stylewidget import StyleWidget
 
 
 def geometryType():
-  return QGis.Point
+    return QGis.Point
 
 
 def objectTypeNames():
-  return ["JSON model", "COLLADA model"]
+    return ["JSON model", "COLLADA model"]
 
 
 def setupWidgets(ppage, mapTo3d, layer, type_index=0):
 
-  if type_index == 0:
-    name = "JSON file"
-    filterString = "JSON files (*.json *.js);;All files (*.*)"
-  else:
-    name = "COLLADA file"
-    filterString = "COLLADA files (*.dae);;All files (*.*)"
+    if type_index == 0:
+        name = "JSON file"
+        filterString = "JSON files (*.json *.js);;All files (*.*)"
+    else:
+        name = "COLLADA file"
+        filterString = "COLLADA files (*.dae);;All files (*.*)"
 
-  ppage.initStyleWidgets(color=False, transparency=False)
-  ppage.addStyleWidget(StyleWidget.FILEPATH, {"name": name, "layer": layer, "filterString": filterString})
-  ppage.addStyleWidget(StyleWidget.FIELD_VALUE, {"name": "Scale", "defaultValue": 1, "layer": layer})
-  ppage.addStyleWidget(StyleWidget.FIELD_VALUE, {"name": "Rotation (x)", "label": "Degrees", "defaultValue": 0, "layer": layer})
-  ppage.addStyleWidget(StyleWidget.FIELD_VALUE, {"name": "Rotation (y)", "label": "Degrees", "defaultValue": 0, "layer": layer})
-  ppage.addStyleWidget(StyleWidget.FIELD_VALUE, {"name": "Rotation (z)", "label": "Degrees", "defaultValue": 0, "layer": layer})
+    ppage.initStyleWidgets(color=False, transparency=False)
+    ppage.addStyleWidget(
+        StyleWidget.FILEPATH, {
+            "name": name, "layer": layer, "filterString": filterString})
+    ppage.addStyleWidget(
+        StyleWidget.FIELD_VALUE, {
+            "name": "Scale", "defaultValue": 1, "layer": layer})
+    ppage.addStyleWidget(
+        StyleWidget.FIELD_VALUE, {
+            "name": "Rotation (x)", "label": "Degrees", "defaultValue": 0, "layer": layer})
+    ppage.addStyleWidget(
+        StyleWidget.FIELD_VALUE, {
+            "name": "Rotation (y)", "label": "Degrees", "defaultValue": 0, "layer": layer})
+    ppage.addStyleWidget(
+        StyleWidget.FIELD_VALUE, {
+            "name": "Rotation (z)", "label": "Degrees", "defaultValue": 0, "layer": layer})
 
 
 def write(writer, layer, feat):
-  mapTo3d = writer.settings.mapTo3d()
-  vals = feat.propValues()
-  model_path = vals[0]
+    mapTo3d = writer.settings.mapTo3d()
+    vals = feat.propValues()
+    model_path = vals[0]
 
-  if feat.prop.type_index == 0:
-    model_type = "JSON"
-  else:
-    model_type = "COLLADA"
+    if feat.prop.type_index == 0:
+        model_type = "JSON"
+    else:
+        model_type = "COLLADA"
 
-  index = writer.modelManager.modelIndex(model_path, model_type)
-  scale = float(vals[1]) * mapTo3d.multiplier
-  rx = float(vals[2])
-  ry = float(vals[3])
-  rz = float(vals[4])
+    index = writer.modelManager.modelIndex(model_path, model_type)
+    scale = float(vals[1]) * mapTo3d.multiplier
+    rx = float(vals[2])
+    ry = float(vals[3])
+    rz = float(vals[4])
 
-  # take map rotation into account
-  rotation = writer.settings.baseExtent.rotation()
-  if rotation:
-    rz = (rz - rotation) % 360    # map rotation is clockwise
+    # take map rotation into account
+    rotation = writer.settings.baseExtent.rotation()
+    if rotation:
+        rz = (rz - rotation) % 360    # map rotation is clockwise
 
-  writer.writeFeature({"model_index": index, "pts": feat.geom.asList(), "rotateX": rx, "rotateY": ry, "rotateZ": rz, "scale": scale})
+    writer.writeFeature({"model_index": index, "pts": feat.geom.asList(
+    ), "rotateX": rx, "rotateY": ry, "rotateZ": rz, "scale": scale})

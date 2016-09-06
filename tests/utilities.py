@@ -19,73 +19,79 @@ from qgis.core import QgsMapLayerRegistry, QgsMapSettings, QgsProject
 
 
 def pluginPath(subdir=None):
-  tests_dir = os.path.dirname(os.path.abspath(__file__).decode(sys.getfilesystemencoding()))
-  plugin_dir = os.path.dirname(tests_dir)
-  if subdir is None:
-    return plugin_dir
-  return os.path.join(plugin_dir, subdir)
+    tests_dir = os.path.dirname(
+        os.path.abspath(__file__).decode(
+            sys.getfilesystemencoding()))
+    plugin_dir = os.path.dirname(tests_dir)
+    if subdir is None:
+        return plugin_dir
+    return os.path.join(plugin_dir, subdir)
 
 
 def dataPath(subdir=None):
-  data_path = pluginPath(os.path.join("tests", "data"))
-  if subdir is None:
-    return data_path
-  return os.path.join(data_path, subdir)
+    data_path = pluginPath(os.path.join("tests", "data"))
+    if subdir is None:
+        return data_path
+    return os.path.join(data_path, subdir)
 
 
 def outputPath(subdir=None):
-  data_path = pluginPath(os.path.join("tests", "output"))
-  if subdir is None:
-    return data_path
-  return os.path.join(data_path, subdir)
+    data_path = pluginPath(os.path.join("tests", "output"))
+    if subdir is None:
+        return data_path
+    return os.path.join(data_path, subdir)
 
 
 def initOutputDir():
-  """initialize output directory"""
-  out_dir = outputPath()
-  if os.path.exists(out_dir):
-    shutil.rmtree(out_dir)
-  os.mkdir(out_dir)
+    """initialize output directory"""
+    out_dir = outputPath()
+    if os.path.exists(out_dir):
+        shutil.rmtree(out_dir)
+    os.mkdir(out_dir)
 
 
 def loadProject(filename):
-  # clear the map layer registry
-  QgsMapLayerRegistry.instance().removeAllMapLayers()
+    # clear the map layer registry
+    QgsMapLayerRegistry.instance().removeAllMapLayers()
 
-  assert os.path.exists(filename), "project file does not exist: " + filename
+    assert os.path.exists(filename), "project file does not exist: " + filename
 
-  # load the project
-  QgsProject.instance().read(QFileInfo(filename))
-  assert QgsMapLayerRegistry.instance().mapLayers(), "no layers in map layer registry"
+    # load the project
+    QgsProject.instance().read(QFileInfo(filename))
+    assert QgsMapLayerRegistry.instance().mapLayers(), "no layers in map layer registry"
 
-  doc = QDomDocument()
-  with open(filename) as f:
-    doc.setContent(f.read())
+    doc = QDomDocument()
+    with open(filename) as f:
+        doc.setContent(f.read())
 
-  # map settings
-  mapSettings = QgsMapSettings()
-  mapSettings.readXML(doc.elementsByTagName("mapcanvas").at(0))
+    # map settings
+    mapSettings = QgsMapSettings()
+    mapSettings.readXML(doc.elementsByTagName("mapcanvas").at(0))
 
-  # visible layers
-  layerIds = []
-  nodes = doc.elementsByTagName("legendlayer")
-  for i in range(nodes.count()):
-    elem = nodes.at(i).toElement().elementsByTagName("legendlayerfile").at(0).toElement()
-    if elem.attribute("visible") == "1":
-      layerIds.append(elem.attribute("layerid"))
-  mapSettings.setLayers(layerIds)
+    # visible layers
+    layerIds = []
+    nodes = doc.elementsByTagName("legendlayer")
+    for i in range(nodes.count()):
+        elem = nodes.at(i).toElement().elementsByTagName(
+            "legendlayerfile").at(0).toElement()
+        if elem.attribute("visible") == "1":
+            layerIds.append(elem.attribute("layerid"))
+    mapSettings.setLayers(layerIds)
 
-  # canvas color
-  red = int(doc.elementsByTagName("CanvasColorRedPart").at(0).toElement().text())
-  green = int(doc.elementsByTagName("CanvasColorGreenPart").at(0).toElement().text())
-  blue = int(doc.elementsByTagName("CanvasColorBluePart").at(0).toElement().text())
-  mapSettings.setBackgroundColor(QColor(red, green, blue))
+    # canvas color
+    red = int(doc.elementsByTagName(
+        "CanvasColorRedPart").at(0).toElement().text())
+    green = int(doc.elementsByTagName(
+        "CanvasColorGreenPart").at(0).toElement().text())
+    blue = int(doc.elementsByTagName(
+        "CanvasColorBluePart").at(0).toElement().text())
+    mapSettings.setBackgroundColor(QColor(red, green, blue))
 
-  return mapSettings
+    return mapSettings
 
 
 def log(msg):
-  if isinstance(msg, unicode):
-    qDebug(msg.encode("utf-8"))
-  else:
-    qDebug(str(msg))
+    if isinstance(msg, unicode):
+        qDebug(msg.encode("utf-8"))
+    else:
+        qDebug(str(msg))

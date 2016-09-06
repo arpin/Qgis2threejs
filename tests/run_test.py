@@ -19,34 +19,34 @@ from utilities import pluginPath, initOutputDir
 
 
 def runTest():
-  plugin_dir = pluginPath()
-  plugins_dir = os.path.dirname(plugin_dir)
+    plugin_dir = pluginPath()
+    plugins_dir = os.path.dirname(plugin_dir)
 
-  # python path setting
-  sys.path.append(plugins_dir)
+    # python path setting
+    sys.path.append(plugins_dir)
 
-  # initialize output directory
-  initOutputDir()
+    # initialize output directory
+    initOutputDir()
 
-  plugin_name = os.path.basename(plugin_dir)
-  suite = unittest.TestLoader().discover(plugin_name + ".tests")
-  unittest.TextTestRunner(verbosity=2).run(suite)
+    plugin_name = os.path.basename(plugin_dir)
+    suite = unittest.TestLoader().discover(plugin_name + ".tests")
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 if __name__ == "__main__":
-  gui_mode = True
-  QGISAPP = QgsApplication(sys.argv, gui_mode)
-  QGISAPP.initQgis()
-  print "=" * 70
-  print QGISAPP.showSettings()
-  print "=" * 70
+    gui_mode = True
+    QGISAPP = QgsApplication(sys.argv, gui_mode)
+    QGISAPP.initQgis()
+    print "=" * 70
+    print QGISAPP.showSettings()
+    print "=" * 70
 
-  # set up network disk cache
-  manager = QgsNetworkAccessManager.instance()
-  cache = QNetworkDiskCache(manager)
-  cache.setCacheDirectory(pluginPath(os.path.join("tests", "cache")))
-  cache.setMaximumCacheSize(50 * 1024 * 1024)
-  manager.setCache(cache)
+    # set up network disk cache
+    manager = QgsNetworkAccessManager.instance()
+    cache = QNetworkDiskCache(manager)
+    cache.setCacheDirectory(pluginPath(os.path.join("tests", "cache")))
+    cache.setMaximumCacheSize(50 * 1024 * 1024)
+    manager.setCache(cache)
 
-  # run test!
-  runTest()
+    # run test!
+    runTest()

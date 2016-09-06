@@ -24,24 +24,28 @@ from Qgis2threejs.stylewidget import StyleWidget
 
 
 def geometryType():
-  return QGis.Point
+    return QGis.Point
 
 
 def objectTypeNames():
-  return ["Icon"]
+    return ["Icon"]
 
 
 def setupWidgets(ppage, mapTo3d, layer, type_index=0):
-  filterString = "Images (*.png *.jpg *.gif *.bmp);;All files (*.*)"
+    filterString = "Images (*.png *.jpg *.gif *.bmp);;All files (*.*)"
 
-  ppage.initStyleWidgets(color=False)
-  ppage.addStyleWidget(StyleWidget.FILEPATH, {"name": "Image file", "layer": layer, "filterString": filterString})
-  ppage.addStyleWidget(StyleWidget.FIELD_VALUE, {"name": "Scale", "defaultValue": 1, "layer": layer})
+    ppage.initStyleWidgets(color=False)
+    ppage.addStyleWidget(
+        StyleWidget.FILEPATH, {
+            "name": "Image file", "layer": layer, "filterString": filterString})
+    ppage.addStyleWidget(
+        StyleWidget.FIELD_VALUE, {
+            "name": "Scale", "defaultValue": 1, "layer": layer})
 
 
 def write(writer, layer, feat):
-  vals = feat.propValues()
-  image_path = vals[1]
-  scale = float(vals[2])
-  mat = layer.materialManager.getSpriteIndex(image_path, vals[0])
-  writer.writeFeature({"m": mat, "pts": feat.geom.asList(), "scale": scale})
+    vals = feat.propValues()
+    image_path = vals[1]
+    scale = float(vals[2])
+    mat = layer.materialManager.getSpriteIndex(image_path, vals[0])
+    writer.writeFeature({"m": mat, "pts": feat.geom.asList(), "scale": scale})
