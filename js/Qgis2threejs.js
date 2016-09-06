@@ -12,8 +12,7 @@ window.get_custom_matrix = function() {
 THREE.Object3D.prototype._updateMatrix = THREE.Object3D.prototype.updateMatrix;
 THREE.Object3D.prototype.updateMatrix = function() {
 	this._updateMatrix();
-	console.log(this.type);
-	//this.custom_matrix = window.get_custom_matrix;
+	//console.log(this.type);
 	if (this.custom_matrix !== undefined && this.custom_matrix != null)
 		this.matrix.multiply(this.custom_matrix());
 };
@@ -321,15 +320,6 @@ limitations:
 
         // create a marker for queried point
         var opt = Q3D.Options.qmarker;
-        app.queryMarker = new THREE.Mesh(new THREE.SphereGeometry(opt.r),
-            new THREE.MeshLambertMaterial({
-                color: opt.c,
-                ambient: opt.c,
-                opacity: opt.o,
-                transparent: (opt.o < 1)
-            }));
-        app.queryMarker.visible = false;
-        app.scene.add(app.queryMarker);
 
         // update matrix world here
         app.scene.updateMatrixWorld();
@@ -449,7 +439,6 @@ limitations:
 			if (app.project.layers[i] instanceof Q3D.PointLayer) {
 				app.project.layers[i].updateMatrixWorld();
 			}
-			
 		}
 
         app.renderer.render(app.scene, app.camera);
@@ -768,7 +757,6 @@ limitations:
 
     app.closePopup = function() {
         app.popup.hide();
-        app.queryMarker.visible = false;
         app.highlightFeature(null, null);
         if (app._canvasImageUrl) {
             URL.revokeObjectURL(app._canvasImageUrl);
@@ -826,11 +814,6 @@ limitations:
         for (var i = 0, l = objs.length; i < l; i++) {
             var obj = objs[i];
             if (!obj.object.visible) continue;
-
-            // query marker
-            app.queryMarker.position.set(obj.point.x, obj.point.y, obj.point.z);
-            app.queryMarker.visible = true;
-            app.queryMarker.updateMatrixWorld();
 
             // get layerId and featureId of clicked object
             var object = obj.object,
