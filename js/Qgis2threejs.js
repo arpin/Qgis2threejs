@@ -4,6 +4,20 @@
 // (C) 2014 Minoru Akagi | MIT License
 // https://github.com/minorua/Qgis2threejs
 
+window.zoomfactor = 1;
+window.get_custom_matrix = function() {
+	var scale = window.zoomfactor < 1 ? window.zoomfactor : 1;
+	return (new THREE.Matrix4()).makeScale(scale,1,scale);
+};
+THREE.Object3D.prototype._updateMatrix = THREE.Object3D.prototype.updateMatrix;
+THREE.Object3D.prototype.updateMatrix = function() {
+	this._updateMatrix();
+	console.log(this.type);
+	//this.custom_matrix = window.get_custom_matrix;
+	if (this.custom_matrix !== undefined && this.custom_matrix != null)
+		this.matrix.multiply(this.custom_matrix());
+};
+
 var Q3D = {
     VERSION: "1.4"
 };
@@ -430,6 +444,14 @@ limitations:
     };
 
     app.render = function() {
+		
+		for (var i = 0; i < app.project.layers.length; i++) {
+			if (app.project.layers[i] instanceof Q3D.PointLayer) {
+				app.project.layers[i].updateMatrixWorld();
+			}
+			
+		}
+
         app.renderer.render(app.scene, app.camera);
         app.updateLabelPosition();
     };
@@ -1764,6 +1786,9 @@ Q3D.PointLayer.prototype.build = function(parent) {
         var z_addend = (f.h) ? f.h / 2 : 0;
         for (var i = 0, l = f.pts.length; i < l; i++) {
             var mesh = new THREE.Mesh(createGeometry(f), materials[f.m].m);
+			
+			if (this.objType == "Cylinder")
+				mesh.custom_matrix = window.get_custom_matrix;
 
             var pt = f.pts[i];
             mesh.position.set(pt[0], pt[1], pt[2] + z_addend);

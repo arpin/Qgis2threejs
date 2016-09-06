@@ -369,6 +369,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 		else if ( scale != 1 ) {
 
 			offset.copy( position ).sub( this.target );
+			
+			window.zoomfactor = offset.length()/100;
 
 			offset.multiplyScalar( scale );
 			position.copy( this.target ).add( offset );
